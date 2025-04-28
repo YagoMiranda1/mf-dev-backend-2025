@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using mf_dev_backend_2025.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace mf_dev_backend_2025.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class UsuariosController : Controller
     {
         private readonly AppDbContext _context;
@@ -25,12 +28,21 @@ namespace mf_dev_backend_2025.Controllers
         {
             return View(await _context.Usuarios.ToListAsync());
         }
+
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
         public IActionResult Login() 
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(Usuario usuario)
         {
             var dados = await _context.Usuarios
@@ -76,6 +88,7 @@ namespace mf_dev_backend_2025.Controllers
             return View();
         }
 
+        [AllowAnonymous]
             public async Task<IActionResult> Logout()
             {
             await HttpContext.SignOutAsync();
